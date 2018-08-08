@@ -23,11 +23,12 @@ HOST = '0.0.0.0'
 
 DATABASE = SqliteDatabase('learning_journal.db')
 
+
 # Helper functions
 
 def slugify(string):
     """Takes a string and turns it into a valid slug
-    
+
     Note that this creates a valid slug but does not guarantee that
     the slug is unique.
     """
@@ -123,8 +124,9 @@ class JournalEntry(Model):
         order_by = ('-created_date',)
 
     @classmethod
-    def create_journal_entry(cls, title, time_spent, what_learned, resources):
-        
+    def create_journal_entry(cls, title, time_spent, what_learned, resources,
+                             user):
+
         # Create a unique slug
         prospective_slug = slugify(title)
         valid_slug = False
@@ -136,7 +138,7 @@ class JournalEntry(Model):
                 trying_slug = prospective_slug + str(slug_suffix)
             try:
                 JournalEntry.select().where(
-                    url_slug==trying_slug
+                    url_slug == trying_slug
                 ).get()
             except DoesNotExist:
                 prospective_slug = trying_slug
