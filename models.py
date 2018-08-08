@@ -157,7 +157,7 @@ class JournalEntry(Model):
                     time_spent=time_spent,
                     what_learned=what_learned,
                     resources=resources,
-                    user=TBD
+                    user=user
                 )
             except IntegrityError:
                 raise ValueError("Entry already exists")
