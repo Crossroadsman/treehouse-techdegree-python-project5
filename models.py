@@ -23,6 +23,48 @@ HOST = '0.0.0.0'
 
 DATABASE = SqliteDatabase('learning_journal.db')
 
+# Helper functions
+
+def slugify(string):
+    """Takes a string and turns it into a valid slug
+    
+    Note that this creates a valid slug but does not guarantee that
+    the slug is unique.
+    """
+    slug = ""
+    for character in string:
+        regular_characters = "abcdefghijklmnopqrstuvwxyz0123456789_"
+        extended_characters = {
+            'å': 'a',
+            'á': 'a',
+            'ä': 'a',
+            'â': 'a',
+            'ç': 'c',
+            'é': 'e',
+            'ë': 'e',
+            'ê': 'e',
+            'í': 'i',
+            'ï': 'i',
+            'î': 'i',
+            'ñ': 'n',
+            'ó': 'o',
+            'ö': 'o',
+            'ô': 'o',
+            'ø': 'o',
+            'ß': 'ss',
+            'ú': 'u',
+            'ü': 'u',
+            'û': 'u'
+            'œ': 'oe',
+        }
+        if character.lower() in regular_characters:
+            slug += character
+        elif character.lower() in extended_characters:
+            slug += extended_characters[character.lower]
+        else:  # fallback
+            slug += '-'
+    return slug
+
 
 class User(UserMixin, Model):
     """The User, enables multiple people to privately use the same instance
@@ -59,7 +101,7 @@ class JournalEntry(Model):
     then we could remove the unique requirement for title"""
     title = CharField(unique=True)
     created_date = DateTimeField(default=datetime.datetime.now)
-    url_slug = TBD
+    url_slug = CharField(unique=True)
     time_spent = IntegerField()  # minutes
     what_learned = TextField()
     resources = TextField()
@@ -79,6 +121,44 @@ class JournalEntry(Model):
         database = DATABASE
         # `-` indicates descending order
         order_by = ('-created_date',)
+
+    @classmethod
+    def create_journal_entry(cls, title, time_spent, what_learned, resources):
+        
+        # Create a unique slug
+        prospective_slug = slugify(title)
+        valid_slug = False
+        slug_suffix = None
+        while not valid_slug:
+            if not slug_suffix:
+                trying_slug = prospective_slug
+            else:
+                trying_slug = prospective_slug + str(slug_suffix)
+            try:
+                JournalEntry.select().where(
+                    url_slug==trying_slug
+                ).get()
+            except DoesNotExist:
+                prospective_slug = trying_slug
+                valid_slug = True
+            else:  # slug already exists
+                if not slug_suffix:
+                    slug_suffix = 1
+                else:
+                    slug_suffix += 1
+
+        with DATABASE.transaction():
+            try:
+                cls.create(
+                    title=title,
+                    url_slug=prospective_slug,
+                    time_spent=time_spent,
+                    what_learned=what_learned,
+                    resources=resources,
+                    user=TBD
+                )
+            except IntegrityError:
+                raise ValueError("Entry already exists")
 
 
 class SubjectTag(Model):
