@@ -1,1 +1,3 @@
-# treehouse-techdegree-python-project5
+Treehouse Python TechDegree Project 5: Learning Journal
+=======================================================
+
