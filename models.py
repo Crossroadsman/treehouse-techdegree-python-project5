@@ -82,6 +82,10 @@ class JournalEntry(Model):
 
 
 class SubjectTag(Model):
+    """Tags for particular subjects. Many-to-many with JournalEntry because
+    multiple journal entries can have a particular tag, and a journal entry
+    can have multiple tags.
+    """
     name = CharField(unique=True)
     journal_entries = TBD
 
