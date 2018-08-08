@@ -21,7 +21,10 @@ DEBUG = True
 PORT = 8000
 HOST = '0.0.0.0'
 
-DATABASE = SqliteDatabase('learning_journal.db')
+# Ensure foreign-key relationships are enforced
+# See: http://docs.peewee-orm.com/en/latest/peewee/relationships.html
+DATABASE = SqliteDatabase('learning_journal.db',
+                          pragmas={'foreign keys': 1})
 
 
 # Helper functions
@@ -169,7 +172,15 @@ class SubjectTag(Model):
     can have multiple tags.
     """
     name = CharField(unique=True)
-    journal_entries = TBD
+
+
+class JournalEntry_SubjectTag(Model):
+    """Using peewee's built-in manytomany field is advised against by the
+    author.
+    See: http://docs.peewee-orm.com/en/latest/peewee/relationships.html
+    """
+    journal_entry = ForeignKeyField(model=JournalEntry)
+    subject_tag = ForeignKeyField(model=SubjectTag)
 
 
 def initialize():
