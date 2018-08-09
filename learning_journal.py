@@ -7,11 +7,13 @@ Last Update: 2018-08-09
 Author: Alex Koumparos
 Modified by: Alex Koumparos
 """
-from flask import Flask, g, render_template
-from flask_login import LoginManager, current_user, login_required
+from flask import Flask, g, render_template, redirect, url_for
+from flask_login import (LoginManager, current_user, login_required, login_user
+                         )
+from flask_bcrypt import check_password_hash
 
 import models
-
+import forms
 
 DEBUG = True
 PORT = 8000
@@ -23,6 +25,14 @@ app.secret_key = 'qazwsxedcrfvtgbyhnujmikolp'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+
+@login_manager.user_loader
+def load_user(userid):
+    try:
+        return models.User.get(models.User.id == userid)
+    except models.DoesNotExist:
+        return None
 
 
 @app.before_request
@@ -42,8 +52,26 @@ def after_request(response):
 
 @app.route('/', methods=('GET', 'POST'))
 def login():
+    bad_login_msg = "Your username or password was invalid"
     form = forms.LoginForm()
-    return "login will go here"
+    if form.validate_on_submit():
+        try:
+            user = models.User.get(models.User.username == form.username.data)
+        except models.DoesNotExist:
+            # TBD
+            # Flash?
+            print("DEBUG: " + bad_login_msg)
+        else:
+            if check_password_hash(user.password, 
+                                   form.password.data):
+                login_user(user)
+                # flash?
+                return redirect(url_for('list'))
+            else:
+                # TBD
+                # Flash?
+                print("DEBUG: " + bad_login_msg)
+    return render_template('login.html', form=form)
 
 
 @app.route('/entries')
