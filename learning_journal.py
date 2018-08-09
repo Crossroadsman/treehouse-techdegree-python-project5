@@ -40,21 +40,21 @@ def after_request(response):
     return response
 
 
-@app.route('/')
-def index():
-    """This will have the login"""
+@app.route('/', methods=('GET', 'POST'))
+def login():
+    form = forms.LoginForm()
     return "login will go here"
 
 
-@login_required
 @app.route('/entries')
+@login_required  # login_required must be innermost decorator (see docs)
 def list():
     return render_template('index.html')
 
 
-@login_required
 @app.route('/entries/<slug>')
 @app.route('/details/<slug>')
+@login_required
 def details(slug):
     """Project instructions require a route `/details` (instruction number 4)
     and a route
@@ -63,7 +63,7 @@ def details(slug):
     route to the details view.
     """
     try:
-        entry = models.JournalEntry.select.where(
+        entry = models.JournalEntry.select().where(
             models.JournalEntry.url_slug == slug
         ).get()
     except:
@@ -71,25 +71,26 @@ def details(slug):
         # need to abort(404)
         pass
 
-    return render_template('TBD', entry=entry)
+    return render_template('detail.html', entry=entry)
 
 
-@login_required
 @app.route('/entries/edit/<slug>', methods=['GET', 'POST'])
 @app.route('/entry', methods=['GET', 'POST'])
+@login_required
 def add_edit(slug=None):
+    form = None
     if slug is None:
         # add entry
-        pass
+        template = 'new.html'
     else:
         # edit entry
-        pass
+        template = 'edit.html'
     # form
-    return "This will be the add/edit entry route"
+    return render_template(template, form=form)
 
 
-@login_required
 @app.route('/entries/delete/<slug>')
+@login_required
 def delete_entry(slug):
     return "This will be the delete entry route"
 
