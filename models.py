@@ -14,15 +14,10 @@ from flask_bcrypt import generate_password_hash
 from flask_bcrypt import check_password_hash
 from flask_login import UserMixin
 
-DEBUG = True
-PORT = 8000
-HOST = '0.0.0.0'
-
 # Ensure foreign-key relationships are enforced
 # See: http://docs.peewee-orm.com/en/latest/peewee/relationships.html
 DATABASE = SqliteDatabase('learning_journal.db',
-                          pragmas={'foreign keys': 1})
-
+                          pragmas={'foreign_keys': 1})
 
 # Helper functions
 
@@ -55,13 +50,13 @@ def slugify(string):
             'ß': 'ss',
             'ú': 'u',
             'ü': 'u',
-            'û': 'u'
+            'û': 'u',
             'œ': 'oe',
         }
         if character.lower() in regular_characters:
             slug += character
         elif character.lower() in extended_characters:
-            slug += extended_characters[character.lower]
+            slug += extended_characters[character.lower()]
         else:  # fallback
             slug += '-'
     return slug
@@ -170,6 +165,9 @@ class SubjectTag(Model):
     """
     name = CharField(unique=True)
 
+    class Meta:
+        database = DATABASE
+
 
 class JournalEntry_SubjectTag(Model):
     """Using peewee's built-in manytomany field is advised against by the
@@ -179,8 +177,14 @@ class JournalEntry_SubjectTag(Model):
     journal_entry = ForeignKeyField(model=JournalEntry)
     subject_tag = ForeignKeyField(model=SubjectTag)
 
+    class Meta:
+        database = DATABASE
+
 
 def initialize():
     DATABASE.connect()
-    DATABASE.create_tables([User], safe=True)
+    DATABASE.create_tables(
+        [User, JournalEntry, SubjectTag, JournalEntry_SubjectTag],
+        safe=True
+    )
     DATABASE.close()
