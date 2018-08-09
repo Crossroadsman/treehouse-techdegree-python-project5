@@ -3,12 +3,12 @@
 """Learning Journal
 The main application for the Learning Journal application
 Created: 2018
-Last Update: 2018-08-08
+Last Update: 2018-08-09
 Author: Alex Koumparos
 Modified by: Alex Koumparos
 """
-from flask import Flask, g
-from flask_login import LoginManager, current_user
+from flask import Flask, g, render_template
+from flask_login import LoginManager, current_user, login_required
 
 import models
 
@@ -39,21 +39,59 @@ def after_request(response):
     g.db.close()
     return response
 
-"""
-routes:
 
-'/'
+@app.route('/')
+def index():
+    """This will have the login"""
+    return "login will go here"
 
-'/entries'
 
-'/entries/<slug>'
+@login_required
+@app.route('/entries')
+def list():
+    return render_template('index.html')
 
-'/entries/edit/<slug>'
 
-'/entries/delete/<slug>'
+@login_required
+@app.route('/entries/<slug>')
+@app.route('/details/<slug>')
+def details(slug):
+    """Project instructions require a route `/details` (instruction number 4)
+    and a route
+    `/entries/<slug>`.
+    These don't appear to have any difference in substance, so they both
+    route to the details view.
+    """
+    try:
+        entry = models.JournalEntry.select.where(
+            models.JournalEntry.url_slug == slug
+        ).get()
+    except:
+        # need to define exception
+        # need to abort(404)
+        pass
 
-'/entry'
-"""
+    return render_template('TBD', entry=entry)
+
+
+@login_required
+@app.route('/entries/edit/<slug>', methods=['GET', 'POST'])
+@app.route('/entry', methods=['GET', 'POST'])
+def add_edit(slug=None):
+    if slug is None:
+        # add entry
+        pass
+    else:
+        # edit entry
+        pass
+    # form
+    return "This will be the add/edit entry route"
+
+
+@login_required
+@app.route('/entries/delete/<slug>')
+def delete_entry(slug):
+    return "This will be the delete entry route"
 
 # ------------------------
 
