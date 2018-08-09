@@ -8,10 +8,11 @@ Author: Alex Koumparos
 Modified by: Alex Koumparos
 """
 from flask_wtf import Form
-from wtforms import StringField, PasswordField
-from wtforms.validators import DataRequired
+from wtforms import (StringField, PasswordField, DateTimeField,
+                     IntegerField, TextAreaField)
+from wtforms.validators import DataRequired, Optional
 
-from models import User
+from models import User, JournalEntry
 
 
 # Custom Validators
@@ -27,6 +28,38 @@ class LoginForm(Form):
     )
     password = PasswordField(
         'Password',
+        validators=[
+            DataRequired()
+        ]
+    )
+
+class NewEntryForm(Form):
+    title = StringField(
+        'Title',
+        validators=[
+            DataRequired()
+        ]
+    )
+    learning_date = DateTimeField(
+        'Date (or leave blank for now)',
+        validators=[
+            Optional()
+        ]
+    )
+    time_spent = IntegerField(
+        'Time spent (in minutes)',
+        validators=[
+            DataRequired()
+        ]
+    )
+    what_learned = TextAreaField(
+        'What I Learned',
+        validators=[
+            DataRequired()
+        ]
+    )
+    resources = TextAreaField(
+        'Resources to Remember',
         validators=[
             DataRequired()
         ]

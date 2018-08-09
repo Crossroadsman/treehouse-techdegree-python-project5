@@ -96,7 +96,7 @@ class JournalEntry(Model):
     that multiple users could have journal entries with the same name,
     then we could remove the unique requirement for title"""
     title = CharField(unique=True)
-    created_date = DateTimeField(default=datetime.datetime.now)
+    learning_date = DateTimeField()
     url_slug = CharField(unique=True)
     time_spent = IntegerField()  # minutes
     what_learned = TextField()
@@ -116,11 +116,11 @@ class JournalEntry(Model):
     class Meta:
         database = DATABASE
         # `-` indicates descending order
-        order_by = ('-created_date',)
+        order_by = ('-learning_date',)
 
     @classmethod
-    def create_journal_entry(cls, title, time_spent, what_learned, resources,
-                             user):
+    def create_journal_entry(cls, title, learning_date, time_spent,
+                             what_learned, resources, user):
 
         # Create a unique slug
         prospective_slug = slugify(title)
@@ -132,9 +132,7 @@ class JournalEntry(Model):
             else:
                 trying_slug = prospective_slug + str(slug_suffix)
             try:
-                JournalEntry.select().where(
-                    url_slug == trying_slug
-                ).get()
+                JournalEntry.get(JournalEntry.url_slug == trying_slug)
             except DoesNotExist:
                 prospective_slug = trying_slug
                 valid_slug = True
@@ -148,6 +146,7 @@ class JournalEntry(Model):
             try:
                 cls.create(
                     title=title,
+                    learning_date=learning_date,
                     url_slug=prospective_slug,
                     time_spent=time_spent,
                     what_learned=what_learned,

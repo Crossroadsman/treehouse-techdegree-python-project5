@@ -7,6 +7,8 @@ Last Update: 2018-08-09
 Author: Alex Koumparos
 Modified by: Alex Koumparos
 """
+import datetime
+
 from flask import Flask, g, render_template, redirect, url_for, flash
 from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
@@ -98,7 +100,7 @@ def list():
 def details(slug):
     """Project instructions require a route `/details` (instruction number 4)
     and a route
-    `/entries/<slug>`.
+    `/entries/<slug>` (listed in instruction number 2).
     These don't appear to have any difference in substance, so they both
     route to the details view.
     """
@@ -120,12 +122,30 @@ def details(slug):
 def add_edit(slug=None):
     form = None
     if slug is None:
-        # add entry
-        template = 'new.html'
+        form = forms.NewEntryForm()
+        if form.validate_on_submit():
+            # form is valid
+            if form.learning_date.data is None:
+                learning_date = datetime.datetime.now()
+            else:
+                learning_date = form.learning_date.data
+            
+            models.JournalEntry.create_journal_entry(
+                title=form.title.data,
+                learning_date=learning_date,
+                time_spent=form.time_spent.data,
+                what_learned=form.what_learned.data,
+                resources=form.resources.data,
+                user=current_user._get_current_object()
+            )
+            return redirect(url_for('list'))
+        else:
+            template = 'new.html'
     else:
         # edit entry
         template = 'edit.html'
-    # form
+        # form
+    
     return render_template(template, form=form)
 
 
