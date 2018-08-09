@@ -7,9 +7,9 @@ Last Update: 2018-08-09
 Author: Alex Koumparos
 Modified by: Alex Koumparos
 """
-from flask import Flask, g, render_template, redirect, url_for
-from flask_login import (LoginManager, current_user, login_required, login_user
-                         )
+from flask import Flask, g, render_template, redirect, url_for, flash
+from flask_login import (LoginManager, current_user, login_required,
+                         login_user, logout_user)
 from flask_bcrypt import check_password_hash
 
 import models
@@ -52,32 +52,44 @@ def after_request(response):
 
 @app.route('/', methods=('GET', 'POST'))
 def login():
+    if current_user.is_authenticated:
+        print("User " + str(current_user) + " is authenticated")
+        return redirect(url_for('list'))
+
+    # user is not logged in
     bad_login_msg = "Your username or password was invalid"
     form = forms.LoginForm()
     if form.validate_on_submit():
         try:
             user = models.User.get(models.User.username == form.username.data)
         except models.DoesNotExist:
-            # TBD
-            # Flash?
+            flash(bad_login_msg, "error")
             print("DEBUG: " + bad_login_msg)
         else:
             if check_password_hash(user.password, 
                                    form.password.data):
                 login_user(user)
-                # flash?
+                flash("You successfully logged in", "success")
                 return redirect(url_for('list'))
             else:
-                # TBD
-                # Flash?
+                flash(bad_login_msg, "error")
                 print("DEBUG: " + bad_login_msg)
     return render_template('login.html', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash("You successfully logged out")
+    return redirect(url_for('login'))
 
 
 @app.route('/entries')
 @login_required  # login_required must be innermost decorator (see docs)
 def list():
-    return render_template('index.html')
+    journal_entries = current_user._get_current_object().journal_entries
+    return render_template('index.html', journal_entries=journal_entries)
 
 
 @app.route('/entries/<slug>')

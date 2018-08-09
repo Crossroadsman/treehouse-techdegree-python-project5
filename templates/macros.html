@@ -1,0 +1,9 @@
+{% macro render_field(field) %}
+  {# This macro renders a (specified) field of an HTML form #}
+  <div class="field">
+    {% if field.errors %}
+      <div class="notification error">{{ error }}</div>
+    {% endif %}
+    {{ field(placeholder=field.label.text) }}
+  </div>
+{% endmacro %}
