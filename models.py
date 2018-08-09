@@ -14,9 +14,6 @@ from flask_bcrypt import generate_password_hash
 from flask_bcrypt import check_password_hash
 from flask_login import UserMixin
 
-
-SECRET_KEY = 'qazwsxedcrfvtgbyhnujmikolp'
-
 DEBUG = True
 PORT = 8000
 HOST = '0.0.0.0'
