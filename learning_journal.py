@@ -55,7 +55,6 @@ def after_request(response):
 @app.route('/', methods=('GET', 'POST'))
 def login():
     if current_user.is_authenticated:
-        print("User " + str(current_user) + " is authenticated")
         return redirect(url_for('list'))
 
     # user is not logged in
@@ -181,7 +180,15 @@ def add_edit(slug=None):
 @app.route('/entries/delete/<slug>')
 @login_required
 def delete_entry(slug):
-    return "This will be the delete entry route"
+    try:
+        entry = models.JournalEntry.get(models.JournalEntry.url_slug == slug)
+    except models.DoesNotExist:
+        # TBD
+        # abort404
+        pass
+    else:
+        entry.delete()
+    return redirect(url_for('list'))
 
 # ------------------------
 

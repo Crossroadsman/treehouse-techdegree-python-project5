@@ -3,7 +3,7 @@
 """Models
 The Database models for the Learning Journal application
 Created: 2018
-Last Update: 2018-08-08
+Last Update: 2018-08-09
 Author: Alex Koumparos
 Modified by: Alex Koumparos
 """

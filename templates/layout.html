@@ -20,6 +20,19 @@
                       <a class="button icon-left" href="{{ url_for('logout') }}">Log out</a>
                     {% endif %}
                 </div>
+                {% with messages = get_flashed_messages(with_categories=True) %}
+                  {% if messages %}
+                    <ul class="flashes">
+                      {% for category, message in messages %}
+                        {% if category == 'error' %}
+                          <li><strong>{{ message }}</strong></li>
+                        {% else %}
+                          <li>{{ message }}</li>  
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                {% endwith %}
                 <div>
                     <h1>MyJournal | {% block header %}{% endblock %}</h1>
                 </div>
