@@ -44,7 +44,8 @@ class NewEntryForm(Form):
         'Date (or leave blank for now)',
         validators=[
             Optional()
-        ]
+        ],
+        render_kw={"placeholder": "yyyy-mm-dd hh:mm:ss"}
     )
     time_spent = IntegerField(
         'Time spent (in minutes)',
