@@ -175,11 +175,13 @@ class JournalEntry_SubjectTag(Model):
     """
     journal_entry = ForeignKeyField(
         model=JournalEntry,
-        backref='journal_entry_subject_tags'
+        backref='journal_entry_subject_tags',
+        on_delete='CASCADE'
     )
     subject_tag = ForeignKeyField(
         model=SubjectTag,
-        backref='journal_entry_subject_tags'
+        backref='journal_entry_subject_tags',
+        on_delete='CASCADE'
     )
 
     class Meta:
