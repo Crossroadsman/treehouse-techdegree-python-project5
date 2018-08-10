@@ -14,11 +14,12 @@ body {
 .container {
 	margin: 0 auto;
 	padding: 0 25px;
+	background-color: #DEF;
 }
 header .site-header {
 	margin: 0 auto;
 	height: 95px;
-	background-color: #DEF
+	background-color: #DEF;
 }
 header .logo i {
 	color: #678f89;
@@ -92,7 +93,7 @@ h3 {
 	margin: 0;
 	font-weight: 400;
 	line-height: 1em;
-	color: #000;
+	color: #023;
 }
 h1 {
 	font-size: 44px;
@@ -103,7 +104,7 @@ h2 {
 }
 h2 a {
 	text-decoration: none;
-	color: #000;
+	color: #023;
 }
 h3 {
 	font-size: 18px;
@@ -130,6 +131,9 @@ ul li a {
 	line-height: 1.8em;
 	color: #678f89;
 	text-decoration: none;
+}
+.simple-list {
+	list-style-type: none;
 }
 
 

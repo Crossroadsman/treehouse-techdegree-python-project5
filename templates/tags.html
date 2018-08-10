@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Tags
+{% endblock %}
+
+{% block header %}
+    Tags
+{% endblock %}
+
+{% block content %}
+    <section>
+        <div class="container">
+            <div class="entry-list">
+                {% if tags.count() == 0 %}
+                    <article>
+                        <h2>No tags yet!</h2>
+                        <p>Add some to your journal entries!</p>
+                    </article>
+                {% else %}
+                    {% for tag in tags %}
+                        <article>
+                            <h2>{{ tag.name }}</h2>
+                            <h4>Journal Entries:</h4>
+                            {% if tag.journal_entry_subject_tags.count() == 0 %}
+                                <p><em>No associated entries</em></p>
+                            {% else %}
+                                <ul class="simple-list">
+                                    {% for jest in tag.journal_entry_subject_tags %}
+                                        <li><a href="{{ url_for('details', slug=jest.journal_entry.url_slug) }}">{{ jest.journal_entry.title }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                {% endif %}    
+            </div>
+        </div>
+    </section>
+{% endblock %}

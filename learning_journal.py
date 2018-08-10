@@ -219,6 +219,14 @@ def delete_entry(slug):
             raise
     return redirect(url_for('list'))
 
+
+@app.route('/tags')
+@login_required
+def tags():
+    tags = models.SubjectTag.select()
+    return render_template('tags.html', tags=tags)
+
+
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404

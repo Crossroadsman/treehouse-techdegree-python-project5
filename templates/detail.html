@@ -36,7 +36,7 @@
                             {% else %}
                                 <ul>
                                     {% for jest in entry.journal_entry_subject_tags %}
-                                        <li>{{ jest.subject_tag.name }}</li>
+                                        <li><a href="{{ url_for('tags') }}">{{ jest.subject_tag.name }}</a></li>
                                     {% endfor %}
                                 </ul>
                             {% endif %}

@@ -26,9 +26,9 @@
                             {% if journal_entry.journal_entry_subject_tags.count() == 0 %}
                                 <p><em>No tags</em></p>
                             {% else %}
-                                <ul>
+                                <ul class="simple-list">
                                     {% for jest in journal_entry.journal_entry_subject_tags %}
-                                        <li>{{ jest.subject_tag.name }}</li>
+                                        <li><a href="{{ url_for('tags') }}">{{ jest.subject_tag.name }}</a></li>
                                     {% endfor %}
                                 </ul>
                             {% endif %}

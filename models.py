@@ -166,6 +166,7 @@ class SubjectTag(Model):
 
     class Meta:
         database = DATABASE
+        order_by = ('name',)
 
 
 class JournalEntry_SubjectTag(Model):
