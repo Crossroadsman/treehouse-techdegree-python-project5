@@ -9,6 +9,7 @@ body {
 	color: #404a49;
 	font-family: 'Cousine', serif;
 	font-weight: 400;
+	background-color: #E0F0FF;
 }
 .container {
 	margin: 0 auto;
@@ -17,6 +18,7 @@ body {
 header .site-header {
 	margin: 0 auto;
 	height: 95px;
+	background-color: #DEF
 }
 header .logo i {
 	color: #678f89;

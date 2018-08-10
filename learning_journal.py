@@ -3,19 +3,27 @@
 """Learning Journal
 The main application for the Learning Journal application
 Created: 2018
-Last Update: 2018-08-09
+Last Update: 2018-08-10
 Author: Alex Koumparos
 Modified by: Alex Koumparos
 """
 import datetime
+import logging
 
-from flask import Flask, g, render_template, redirect, url_for, flash
+from flask import Flask, g, render_template, redirect, url_for, flash, abort
 from flask_login import (LoginManager, current_user, login_required,
                          login_user, logout_user)
 from flask_bcrypt import check_password_hash
 
 import models
 import forms
+
+logging.basicConfig(
+    filename='learning_journal.log',
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 
 DEBUG = True
 PORT = 8000
@@ -65,7 +73,7 @@ def login():
             user = models.User.get(models.User.username == form.username.data)
         except models.DoesNotExist:
             flash(bad_login_msg, "error")
-            print("DEBUG: " + bad_login_msg)
+            logging.exception(bad_login_msg)
         else:
             if check_password_hash(user.password, 
                                    form.password.data):
@@ -74,7 +82,7 @@ def login():
                 return redirect(url_for('list'))
             else:
                 flash(bad_login_msg, "error")
-                print("DEBUG: " + bad_login_msg)
+                logging.info(bad_login_msg)
     return render_template('login.html', form=form)
 
 
@@ -104,12 +112,15 @@ def details(slug):
     route to the details view.
     """
     try:
-        entry = models.JournalEntry.select().where(
+        entry = models.JournalEntry.get(
             models.JournalEntry.url_slug == slug
-        ).get()
-    except:
+        )
+    except models.DoesNotExist:
+        msg = "Unable to find record with url_slug {}".format(slug)
+        logging.exception(msg)
         # need to define exception
         # need to abort(404)
+        abort(404)
         pass
 
     return render_template('detail.html', entry=entry)
@@ -189,6 +200,10 @@ def delete_entry(slug):
     else:
         entry.delete()
     return redirect(url_for('list'))
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('404.html'), 404
 
 # ------------------------
 
