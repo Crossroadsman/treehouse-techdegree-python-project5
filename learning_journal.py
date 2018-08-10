@@ -142,6 +142,33 @@ def add_edit(slug=None):
         else:
             template = 'new.html'
     else:
+        try:
+            entry = models.JournalEntry.get(
+                models.JournalEntry.url_slug == slug)
+        except models.DoesNotExist:
+            # abort
+            # TBD
+            pass
+        else:
+            form = forms.EditEntryForm(
+                title=entry.title,
+                learning_date=entry.learning_date,
+                time_spent=entry.time_spent,
+                what_learned=entry.what_learned,
+                resources=entry.resources
+            )
+            if form.validate_on_submit():
+                # form is valid
+                entry.title = form.title.data
+                entry.learning_date = form.learning_date.data
+                entry.time_spent = form.time_spent.data
+                entry.what_learned = form.what_learned.data
+                entry.resouces = form.resources.data
+                entry.save()
+                return redirect(url_for('list'))
+            else:
+                # form is invalid
+                pass
         # edit entry
         template = 'edit.html'
         # form

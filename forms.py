@@ -64,3 +64,35 @@ class NewEntryForm(Form):
             DataRequired()
         ]
     )
+
+class EditEntryForm(Form):
+    title = StringField(
+        'Title',
+        validators=[
+            DataRequired()
+        ]
+    )
+    learning_date = DateTimeField(
+        'Date (or leave blank for now)',
+        validators=[
+            Optional()
+        ]
+    )
+    time_spent = IntegerField(
+        'Time spent (in minutes)',
+        validators=[
+            DataRequired()
+        ]
+    )
+    what_learned = TextAreaField(
+        'What I Learned',
+        validators=[
+            DataRequired()
+        ]
+    )
+    resources = TextAreaField(
+        'Resources to Remember',
+        validators=[
+            DataRequired()
+        ]
+    )
