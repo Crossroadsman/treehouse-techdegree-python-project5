@@ -14,11 +14,14 @@
         <header>
             <div class="container">
                 <div class="site-header">
-                    {% if current_user.is_authenticated %}  
-                      <a class="logo" href="{{ url_for('list') }}"><i class="material-icons">library_books</i></a>
-                      <a class="button icon-right" href="{{ url_for('add_edit') }}"><span>New Entry</span> <i class="material-icons">add</i></a>                      
-                      <a class="button icon-left" href="{{ url_for('logout') }}">Log out</a>
-                    {% endif %}
+                    <div>
+                      {% if current_user.is_authenticated %}  
+                        <a class="logo" href="{{ url_for('list') }}"><i class="material-icons">library_books</i></a>
+                        <a class="button icon-right" href="{{ url_for('add_edit') }}"><span>New Entry</span> <i class="material-icons">add</i></a>                      
+                        <a class="button icon-left" href="{{ url_for('logout') }}">Log out</a>
+                      {% endif %}
+                      <h1>MyJournal | {% block header %}{% endblock %}</h1>
+                    </div>
                 </div>
                 {% with messages = get_flashed_messages(with_categories=True) %}
                   {% if messages %}
@@ -33,9 +36,7 @@
                     </ul>
                   {% endif %}
                 {% endwith %}
-                <div>
-                    <h1>MyJournal | {% block header %}{% endblock %}</h1>
-                </div>
+                
             </div>
         </header>
         {% block content %}

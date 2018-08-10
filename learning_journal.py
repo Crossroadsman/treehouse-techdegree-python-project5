@@ -75,7 +75,7 @@ def login():
             flash(bad_login_msg, "error")
             logging.exception(bad_login_msg)
         else:
-            if check_password_hash(user.password, 
+            if check_password_hash(user.password,
                                    form.password.data):
                 login_user(user)
                 flash("You successfully logged in", "success")
@@ -132,7 +132,7 @@ def details(slug):
 @login_required
 def add_edit(slug=None):
     form = None
-    if slug is None:
+    if slug is None:  # NEW ENTRY
         form = forms.NewEntryForm()
         if form.validate_on_submit():
             # form is valid
@@ -143,6 +143,7 @@ def add_edit(slug=None):
 
             # TBD need to handle the ValueError where an attempt is made to
             # create a duplicate entry.
+            # Create a journal entry (except tags)
             models.JournalEntry.create_journal_entry(
                 title=form.title.data,
                 learning_date=learning_date,
@@ -154,11 +155,15 @@ def add_edit(slug=None):
             entry = models.JournalEntry.get(
                 models.JournalEntry.title == form.title.data
             )
+
+            # Create tags
             tags = form.tags.data.split()
             for tag_name in tags:
                 tag, _ = models.SubjectTag.get_or_create(
                     name=tag_name
                 )
+                # Create a many-to-many relationship between the tag and the
+                # journal entry
                 models.JournalEntry_SubjectTag.create(
                     journal_entry=entry,
                     subject_tag=tag
@@ -167,7 +172,7 @@ def add_edit(slug=None):
             return redirect(url_for('list'))
         else:
             template = 'new.html'
-    else:
+    else:  # EDIT ENTRY
         try:
             entry = models.JournalEntry.get(
                 models.JournalEntry.url_slug == slug)
@@ -176,12 +181,18 @@ def add_edit(slug=None):
             logging.exception(msg)
             abort(404)
         else:
+            jests = entry.journal_entry_subject_tags
+            tags = []
+            for jest in jests:
+                tags.append(jest.subject_tag.name)
+            tag_string = " ".join(tags)
             form = forms.EditEntryForm(
                 title=entry.title,
                 learning_date=entry.learning_date,
                 time_spent=entry.time_spent,
                 what_learned=entry.what_learned,
-                resources=entry.resources
+                resources=entry.resources,
+                tags=tag_string
             )
             if form.validate_on_submit():
                 # form is valid
@@ -191,6 +202,25 @@ def add_edit(slug=None):
                 entry.what_learned = form.what_learned.data
                 entry.resouces = form.resources.data
                 entry.save()
+
+                # Create tags (and delete old ones)
+                old_jests = models.JournalEntry_SubjectTag.select().where(
+                    models.JournalEntry_SubjectTag.journal_entry == entry
+                )
+                for jest in old_jests:
+                    jest.delete_instance()
+                tags = form.tags.data.split()
+                for tag_name in tags:
+                    tag, _ = models.SubjectTag.get_or_create(
+                        name=tag_name
+                    )
+                    # Create a many-to-many relationship between the tag and
+                    # the journal entry
+                    jest, _ = models.JournalEntry_SubjectTag.get_or_create(
+                        journal_entry=entry,
+                        subject_tag=tag
+                    )
+
                 return redirect(url_for('list'))
             else:
                 # form is invalid
@@ -198,7 +228,7 @@ def add_edit(slug=None):
         # edit entry
         template = 'edit.html'
         # form
-    
+
     return render_template(template, form=form)
 
 

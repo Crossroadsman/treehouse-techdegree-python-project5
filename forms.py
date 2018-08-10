@@ -33,6 +33,7 @@ class LoginForm(Form):
         ]
     )
 
+
 class NewEntryForm(Form):
     title = StringField(
         'Title',
@@ -70,6 +71,7 @@ class NewEntryForm(Form):
         validators=[]
     )
 
+
 class EditEntryForm(Form):
     title = StringField(
         'Title',
@@ -100,4 +102,8 @@ class EditEntryForm(Form):
         validators=[
             DataRequired()
         ]
+    )
+    tags = StringField(
+        'Tags (space separated)',
+        validators=[]
     )

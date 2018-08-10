@@ -19,8 +19,8 @@ from flask_login import UserMixin
 DATABASE = SqliteDatabase('learning_journal.db',
                           pragmas={'foreign_keys': 1})
 
-# Helper functions
 
+# Helper functions
 def slugify(string):
     """Takes a string and turns it into a valid slug
 
