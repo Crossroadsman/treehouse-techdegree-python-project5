@@ -130,6 +130,8 @@ def add_edit(slug=None):
             else:
                 learning_date = form.learning_date.data
             
+            # TBD need to handle the ValueError where an attempt is made to
+            # create a duplicate entry.
             models.JournalEntry.create_journal_entry(
                 title=form.title.data,
                 learning_date=learning_date,
