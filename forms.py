@@ -41,7 +41,7 @@ class NewEntryForm(Form):
         ]
     )
     learning_date = DateTimeField(
-        'Date (or leave blank for now)',
+        'Date (or leave blank to use the current date and time)',
         validators=[
             Optional()
         ],
@@ -64,6 +64,10 @@ class NewEntryForm(Form):
         validators=[
             DataRequired()
         ]
+    )
+    tags = StringField(
+        'Tags (space separated)',
+        validators=[]
     )
 
 class EditEntryForm(Form):

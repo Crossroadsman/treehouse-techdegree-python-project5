@@ -140,7 +140,7 @@ def add_edit(slug=None):
                 learning_date = datetime.datetime.now()
             else:
                 learning_date = form.learning_date.data
-            
+
             # TBD need to handle the ValueError where an attempt is made to
             # create a duplicate entry.
             models.JournalEntry.create_journal_entry(
@@ -151,6 +151,19 @@ def add_edit(slug=None):
                 resources=form.resources.data,
                 user=current_user._get_current_object()
             )
+            entry = models.JournalEntry.get(
+                models.JournalEntry.title == form.title.data
+            )
+            tags = form.tags.data.split()
+            for tag_name in tags:
+                tag, _ = models.SubjectTag.get_or_create(
+                    name=tag_name
+                )
+                models.JournalEntry_SubjectTag.create(
+                    journal_entry=entry,
+                    subject_tag=tag
+                )
+
             return redirect(url_for('list'))
         else:
             template = 'new.html'
