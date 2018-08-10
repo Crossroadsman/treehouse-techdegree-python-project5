@@ -21,7 +21,17 @@
                     {% for journal_entry in journal_entries %}
                         <article>
                             <h2><a href="{{ url_for('details', slug=journal_entry.url_slug) }}">{{ journal_entry.title }}</a></h2>
-                            <time datetime="{{ journal_entry.created_date }}">{{ journal_entry.learning_date.strftime('%A %B %d, %Y') }}</time>
+                            <h3><time datetime="{{ journal_entry.created_date }}">{{ journal_entry.learning_date.strftime('%A %B %d, %Y') }}</time></h3>
+                            <h4>Tagged with:</h4>
+                            {% if journal_entry.journal_entry_subject_tags.count() == 0 %}
+                                <em>No tags</em>
+                            {% else %}
+                                <ul>
+                                    {% for jest in journal_entry.journal_entry_subject_tags %}
+                                        <li>jest.subject_tag.name</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                         </article>
                     {% endfor %}
                 {% endif %}    

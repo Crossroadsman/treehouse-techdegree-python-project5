@@ -97,7 +97,10 @@ def logout():
 @app.route('/entries')
 @login_required  # login_required must be innermost decorator (see docs)
 def list():
-    journal_entries = current_user._get_current_object().journal_entries
+    user = current_user._get_current_object()
+    journal_entries = user.journal_entries.order_by(
+        models.JournalEntry.learning_date.desc()
+    )
     return render_template('index.html', journal_entries=journal_entries)
 
 
@@ -118,8 +121,6 @@ def details(slug):
     except models.DoesNotExist:
         msg = "Unable to find record with url_slug {}".format(slug)
         logging.exception(msg)
-        # need to define exception
-        # need to abort(404)
         abort(404)
         pass
 
@@ -158,9 +159,9 @@ def add_edit(slug=None):
             entry = models.JournalEntry.get(
                 models.JournalEntry.url_slug == slug)
         except models.DoesNotExist:
-            # abort
-            # TBD
-            pass
+            msg = "{} was not found to be a valid url_slug".format(slug)
+            logging.exception(msg)
+            abort(404)
         else:
             form = forms.EditEntryForm(
                 title=entry.title,
@@ -194,11 +195,15 @@ def delete_entry(slug):
     try:
         entry = models.JournalEntry.get(models.JournalEntry.url_slug == slug)
     except models.DoesNotExist:
-        # TBD
-        # abort404
-        pass
+        msg = "{} was not found to be a valid url_slug".format(slug)
+        logging.exception(msg)
+        abort(404)
     else:
-        entry.delete()
+        try:
+            entry.delete_instance()
+        except:
+            logging.error("UNABLE TO delete_instance for {}".format(entry))
+            raise
     return redirect(url_for('list'))
 
 @app.errorhandler(404)

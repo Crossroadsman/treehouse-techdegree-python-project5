@@ -173,8 +173,14 @@ class JournalEntry_SubjectTag(Model):
     author.
     See: http://docs.peewee-orm.com/en/latest/peewee/relationships.html
     """
-    journal_entry = ForeignKeyField(model=JournalEntry)
-    subject_tag = ForeignKeyField(model=SubjectTag)
+    journal_entry = ForeignKeyField(
+        model=JournalEntry,
+        backref='journal_entry_subject_tags'
+    )
+    subject_tag = ForeignKeyField(
+        model=SubjectTag,
+        backref='journal_entry_subject_tags'
+    )
 
     class Meta:
         database = DATABASE

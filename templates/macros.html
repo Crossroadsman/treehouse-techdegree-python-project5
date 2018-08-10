@@ -4,6 +4,9 @@
     {% if field.errors %}
       <div class="notification error">{{ error }}</div>
     {% endif %}
+    {% if field.type != "CSRFTokenField" %}
+      {{ field.label }}
+    {% endif %}
     {{ field(placeholder=field.label.text) }}
   </div>
 {% endmacro %}
