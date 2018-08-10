@@ -24,7 +24,7 @@
                             <h3><time datetime="{{ journal_entry.created_date }}">{{ journal_entry.learning_date.strftime('%A %B %d, %Y') }}</time></h3>
                             <h4>Tagged with:</h4>
                             {% if journal_entry.journal_entry_subject_tags.count() == 0 %}
-                                <em>No tags</em>
+                                <p><em>No tags</em></p>
                             {% else %}
                                 <ul>
                                     {% for jest in journal_entry.journal_entry_subject_tags %}

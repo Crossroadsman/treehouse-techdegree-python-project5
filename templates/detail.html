@@ -29,6 +29,18 @@
                         <h3>Resources to Remember:</h3>
                         <p>{{ entry.resources }}</p>
                     </div>
+                    <div class="entry">
+                            <h3>Tagged with:</h3>
+                            {% if entry.journal_entry_subject_tags.count() == 0 %}
+                                <p><em>No tags</em></p>
+                            {% else %}
+                                <ul>
+                                    {% for jest in entry.journal_entry_subject_tags %}
+                                        <li>jest.subject_tag.name</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                    </div>
                 </article>
             </div>
         </div>
