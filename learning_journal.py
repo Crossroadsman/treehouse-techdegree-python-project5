@@ -3,7 +3,7 @@
 """Learning Journal
 The main application for the Learning Journal application
 Created: 2018
-Last Update: 2018-08-10
+Last Update: 2018-08-11
 Author: Alex Koumparos
 Modified by: Alex Koumparos
 """
@@ -141,17 +141,22 @@ def add_edit(slug=None):
             else:
                 learning_date = form.learning_date.data
 
-            # TBD need to handle the ValueError where an attempt is made to
-            # create a duplicate entry.
             # Create a journal entry (except tags)
-            models.JournalEntry.create_journal_entry(
-                title=form.title.data,
-                learning_date=learning_date,
-                time_spent=form.time_spent.data,
-                what_learned=form.what_learned.data,
-                resources=form.resources.data,
-                user=current_user._get_current_object()
-            )
+            try:
+                models.JournalEntry.create_journal_entry(
+                    title=form.title.data,
+                    learning_date=learning_date,
+                    time_spent=form.time_spent.data,
+                    what_learned=form.what_learned.data,
+                    resources=form.resources.data,
+                    user=current_user._get_current_object()
+                )
+            except ValueError:
+                msg = "Invalid entry: duplicate value detected"
+                logging.exception(msg)
+                flash(msg, category='error')
+                template = 'new.html'
+                return render_template(template, form=form)
             entry = models.JournalEntry.get(
                 models.JournalEntry.title == form.title.data
             )
@@ -196,12 +201,21 @@ def add_edit(slug=None):
             )
             if form.validate_on_submit():
                 # form is valid
-                entry.title = form.title.data
-                entry.learning_date = form.learning_date.data
-                entry.time_spent = form.time_spent.data
-                entry.what_learned = form.what_learned.data
-                entry.resouces = form.resources.data
-                entry.save()
+
+                # update entry
+                try:
+                    entry.title = form.title.data
+                    entry.learning_date = form.learning_date.data
+                    entry.time_spent = form.time_spent.data
+                    entry.what_learned = form.what_learned.data
+                    entry.resouces = form.resources.data
+                    entry.save()
+                except models.IntegrityError:
+                    msg = "Invalid entry: duplicate value detected"
+                    logging.exception(msg)
+                    flash(msg, category='error')
+                    template = 'edit.html'
+                    return render_template(template, form=form)
 
                 # Create tags (and delete old ones)
                 old_jests = models.JournalEntry_SubjectTag.select().where(
