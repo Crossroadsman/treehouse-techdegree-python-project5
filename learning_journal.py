@@ -208,7 +208,7 @@ def add_edit(slug=None):
                     entry.learning_date = form.learning_date.data
                     entry.time_spent = form.time_spent.data
                     entry.what_learned = form.what_learned.data
-                    entry.resouces = form.resources.data
+                    entry.resources = form.resources.data
                     entry.save()
                 except models.IntegrityError:
                     msg = "Invalid entry: duplicate value detected"
